@@ -91,11 +91,11 @@ DELETE /Employee/delete/{id}
 ```
 Deletes employee. If no employee with that id exists then returns 404.
 
-5.Find
+5. Find
 ```
 POST /Employee/find
 ```
-Returns all employees that matches employee in provided JSON body. Nulls are ignored so You can provide as many arguments as You want.
+Returns all employees that matches employee in provided JSON body. Nulls are ignored so You can provide as many fields as You want.
 
 for example
 ```
@@ -110,3 +110,14 @@ and
 curl -X POST -H 'Content-Type: application/json' -i http://localhost:8081/Employee/find --data '{"name":"Johnny"}'
 ```
 Will return every employee named Johnny.
+
+6. GET Find
+```
+GET /Employee/find
+```
+
+I didn't really know what You mean by "multiple arguments" so maybe You want to look for both Johnny and John at the same time.
+Here You can provide as many arguments as You want even if it is one and the same parameter multiple times. I didnt had time to test it, but it seems to work though.
+```
+http://localhost:8081/Employee/find?name=Johnny&name=John
+```
