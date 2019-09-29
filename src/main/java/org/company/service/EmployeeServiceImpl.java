@@ -103,7 +103,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<RegisteredEmployeeDTO> findByArguments(Map<EmployeeField, String[]> arguments) {
         Specification<Employee> employeeSpecification = null;
         for (Map.Entry<EmployeeField,String[]> entry : arguments.entrySet()){
-            Specification employeeS = null;
+            Specification<Employee> employeeS = null;
             for (String string : entry.getValue()){
                 EmployeeSpecification from = EmployeeSpecification.from(entry.getKey(), string);
                 if (employeeS == null)
