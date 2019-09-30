@@ -121,7 +121,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
             else
             {
-                employeeSpecification.and(employeeS);
+                employeeSpecification = employeeSpecification.and(employeeS);
             }
         }
         return employeeRepository.findAll(employeeSpecification).stream()
