@@ -1,8 +1,11 @@
 package org.company.repository
 
 import org.apache.commons.lang3.RandomStringUtils
+import org.company.controller.EmployeeField
 import org.company.dto.EmployeeDTO
 import org.company.entity.Employee
+import org.company.service.EmployeeService
+import org.company.util.SpecificationUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import spock.lang.Specification
@@ -13,7 +16,7 @@ import java.util.concurrent.ThreadLocalRandom
 class EmployeeRepositoryIT extends Specification {
 
     @Autowired
-    private EmployeeRepository employeeRepository;
+    private EmployeeRepository employeeRepository
 
     def setup()
     {
@@ -44,7 +47,7 @@ class EmployeeRepositoryIT extends Specification {
         List<Employee> employeeList = employeeRepository.findByEmployeeDTO(testEmployee)
 
         then:
-        employeeList.size() ==  4
+        employeeList.size() ==  6
     }
 
     def '''should get all employees with surname Doel'''()
@@ -138,6 +141,36 @@ class EmployeeRepositoryIT extends Specification {
         save.getId() != null
     }
 
+    def '''should find employees using specification created from parameters'''()
+    {
+        given:      "parameters sent by user"
+        Map<EmployeeField, String[]> parameters = new HashMap<>();
+        parameters.put(EmployeeField.NAME, ['Jade','Jane'] as String[])
+        parameters.put(EmployeeField.GRADE, ['5','3'] as String[])
+
+        and:        "specification returned by employeeServide::getSpecificationFromParameters"
+        org.springframework.data.jpa.domain.Specification<Employee> specification = SpecificationUtils.getSpecificationFromParameters(parameters)
+
+        when:       "find by specification"
+        List<Employee> employeeList = employeeRepository.findAll(specification)
+        then:       "should return two employees"
+        employeeList.size() == 2
+    }
+
+    def '''should get all employees if parameters empty'''()
+    {
+        given:      "parameters sent by user"
+        Map<EmployeeField, String[]> parameters = new HashMap<>();
+
+        and:        "specification returned by employeeServide::getSpecificationFromParameters"
+        org.springframework.data.jpa.domain.Specification<Employee> specification = SpecificationUtils.getSpecificationFromParameters(parameters)
+
+        when:       "find by specification"
+        List<Employee> employeeList = employeeRepository.findAll(specification)
+        then:       "should return two employees"
+        employeeList.size() == 6
+    }
+
     def insertTestData()
     {
         employeeRepository.save(
@@ -173,6 +206,24 @@ class EmployeeRepositoryIT extends Specification {
                         surname: 'Doe',
                         salary: 459,
                         grade: 1
+                )
+        )
+
+        employeeRepository.save(
+                new Employee(
+                        name: 'Jane',
+                        surname: 'Doels',
+                        salary: 459,
+                        grade: 5
+                )
+        )
+
+        employeeRepository.save(
+                new Employee(
+                        name: 'Jade',
+                        surname: 'Does',
+                        salary: 500,
+                        grade: 3
                 )
         )
     }

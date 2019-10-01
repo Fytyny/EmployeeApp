@@ -117,7 +117,7 @@ GET /Employee/find
 ```
 
 I didn't really know what You mean by "multiple arguments" so maybe You want to look for both Johnny and John at the same time.
-Here You can provide as many arguments as You want even if it is one and the same parameter multiple times. I didnt had time to test it, but it seems to work though.
+Here You can provide as many arguments as You want even if it is one and the same parameter multiple times.
 ```
 http://localhost:8081/Employee/find?name=Johnny&name=John
 ```

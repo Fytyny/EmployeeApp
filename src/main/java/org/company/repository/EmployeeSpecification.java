@@ -14,10 +14,14 @@ public class EmployeeSpecification implements Specification<Employee> {
     private String value;
 
     @Override
-    public Predicate toPredicate(Root<Employee> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder)
-    {
-        return criteriaBuilder.equal(
-                root.get(employeeField.getFieldName()), value);
+    public Predicate toPredicate(Root<Employee> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+        if (value == null) {
+            return criteriaBuilder.isNull(
+                    root.get(employeeField.getFieldName()));
+        } else {
+            return criteriaBuilder.equal(
+                    root.get(employeeField.getFieldName()), value);
+        }
     }
 
     public static EmployeeSpecification from (EmployeeField field, String value)

@@ -100,30 +100,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<RegisteredEmployeeDTO> findByArguments(Map<EmployeeField, String[]> arguments) {
-        Specification<Employee> employeeSpecification = null;
-        for (Map.Entry<EmployeeField,String[]> entry : arguments.entrySet()){
-            Specification<Employee> employeeS = null;
-            for (String string : entry.getValue()){
-                EmployeeSpecification from = EmployeeSpecification.from(entry.getKey(), string);
-                if (employeeS == null)
-                {
-                    employeeS = from;
-                }
-                else
-                {
-                    employeeS = employeeS.or(from);
-                }
-            }
-            if (employeeSpecification == null)
-            {
-                employeeSpecification = employeeS;
-            }
-            else
-            {
-                employeeSpecification = employeeSpecification.and(employeeS);
-            }
-        }
+    public List<RegisteredEmployeeDTO> findBySpecification(Specification<Employee> employeeSpecification) {
         return employeeRepository.findAll(employeeSpecification).stream()
                 .map(RegisteredEmployeeDTO::fromEmployee)
                 .collect(Collectors.toList());

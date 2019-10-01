@@ -4,6 +4,8 @@ import org.company.controller.EmployeeField;
 import org.company.dto.EmployeeDTO;
 import org.company.dto.GeneralResponseDTO;
 import org.company.dto.RegisteredEmployeeDTO;
+import org.company.entity.Employee;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 import java.util.Map;
@@ -15,5 +17,5 @@ public interface EmployeeService {
     Optional<RegisteredEmployeeDTO> findById(Integer id);
     GeneralResponseDTO updateEmployeOfIdWithData(EmployeeDTO employeeDTO, Integer id);
     List<RegisteredEmployeeDTO> findBy(EmployeeDTO employeeDTO);
-    List<RegisteredEmployeeDTO> findByArguments(Map<EmployeeField, String[]> arguments);
+    List<RegisteredEmployeeDTO> findBySpecification(Specification<Employee> employeeSpecification);
 }

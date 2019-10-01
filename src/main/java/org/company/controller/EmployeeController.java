@@ -4,6 +4,7 @@ import org.company.dto.EmployeeDTO;
 import org.company.dto.GeneralResponseDTO;
 import org.company.dto.RegisteredEmployeeDTO;
 import org.company.service.EmployeeService;
+import org.company.util.SpecificationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,8 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServlet;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +73,7 @@ public class EmployeeController {
         return employeeService.findBy(employeeDTO);
     }
 
-    @GetMapping(value = "/find", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/find", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public List<RegisteredEmployeeDTO> findEmployeeByGet(ServletRequest request)
     {
@@ -89,7 +88,6 @@ public class EmployeeController {
         if (parameterMap.containsKey("salary"))
             filteredMap.put(EmployeeField.SALARY,parameterMap.get("salary"));
 
-        return employeeService.findByArguments(filteredMap);
-       // return employeeService.findBy(employeeDTO);
+        return employeeService.findBySpecification(SpecificationUtils.getSpecificationFromParameters(filteredMap));
     }
 }

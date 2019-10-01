@@ -1,12 +1,13 @@
 package org.company.service
 
+import org.company.controller.EmployeeField
 import org.company.dto.EmployeeDTO
 import org.company.dto.GeneralResponseDTO
 import org.company.dto.RegisteredEmployeeDTO
 import org.company.entity.Employee
 import org.company.repository.EmployeeRepository
+import org.company.repository.EmployeeSpecification
 import spock.lang.*
-import spock.mock.DetachedMockFactory
 
 import java.util.stream.Collectors
 
@@ -281,4 +282,5 @@ class EmployeeServiceImplTest extends Specification {
         then:
         result.isEmpty()
     }
+
 }

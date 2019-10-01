@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.company.dto.EmployeeDTO
 import org.company.dto.GeneralResponseDTO
 import org.company.dto.RegisteredEmployeeDTO
-import org.company.entity.Employee
 import org.company.service.EmployeeService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -13,6 +12,8 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.util.LinkedMultiValueMap
+import org.springframework.util.MultiValueMap
 import spock.lang.Specification
 import spock.mock.DetachedMockFactory
 
@@ -286,6 +287,59 @@ class EmployeeControllerIT extends Specification {
         result.andExpect(status().isOk())
                 .andExpect(content().contentType(GENERATED_CONTENT_TYPE))
                 .andExpect(content().json(objectMapper.writeValueAsString(Collections.emptyList())))
+    }
+
+    def '''should pass search parameters from /Employee/find get endpoint to employeeService::findByArguments method
+             and return list of employees if any employee meets criteria'''()
+    {
+        given: "user passes some parameters in get request"
+        MultiValueMap<String,String> userGetParameters = new LinkedMultiValueMap()
+        userGetParameters.put("name"   ,['John'])
+        userGetParameters.put('surname',[''])
+        userGetParameters.put('grade'  ,['1','2'])
+        userGetParameters.put('custom' ,['should be ignored'])
+
+        and:    "user's parameters are properly cleared and filtered"
+        Map<EmployeeField, String[]>  filteredUserParameters = new HashMap<>()
+        filteredUserParameters.put( EmployeeField.NAME   ,['John'] as String[])
+        filteredUserParameters.put( EmployeeField.SURNAME,['']     as String[])
+        filteredUserParameters.put( EmployeeField.GRADE  ,['1','2']as String[])
+
+
+        and: "some data that meets that criteria exists on the server"
+        List<RegisteredEmployeeDTO> data = Arrays.asList(
+                new RegisteredEmployeeDTO(
+                        new EmployeeDTO(
+                                name    : 'John',
+                                surname :  null,
+                                grade   : 1,
+                                salary  : 2000
+                        ),3
+                ),
+                new RegisteredEmployeeDTO(
+                        new EmployeeDTO(
+                                name    : 'John',
+                                surname : '',
+                                grade   : 2,
+                                salary  : 3000
+                        ),5
+                )
+        )
+
+        and: "employeeRepostiory can find them"
+        1 * employeeService.findBySpecification(_) >> data
+
+
+        when: "enpoint /Employee/find meets user's request"
+        def result = mvc.perform(
+                get("/Employee/find")
+                .params(userGetParameters)
+        )
+
+        then: "return list in json"
+        result.andExpect(status().isOk())
+                .andExpect(content().contentType(GENERATED_CONTENT_TYPE))
+                .andExpect(content().json(objectMapper.writeValueAsString(data)))
     }
 
     @Configuration
