@@ -106,20 +106,20 @@ class EmployeeControllerIT extends Specification {
     }
 
     def '''should pass id from Employee/delete/{id} endpoint to employeeServide::deleteEmployee
-            and return not modified status if employee dos not exists'''()
+            and return not found status if employee dos not exists'''()
     {
         given: "id of not existing employee passed by user"
         Integer idToBeDeleted = 1
 
         and: "employeeService::deleteEmployee expected answer"
-        1 * employeeService.deleteEmployeeById(idToBeDeleted) >> GeneralResponseDTO.EMPLOYEE_NOT_DELETED
+        1 * employeeService.deleteEmployeeById(idToBeDeleted) >> GeneralResponseDTO.EMPLOYEE_DOES_NOT_EXISTS
 
         when: "endpoint Employee/delete/{id} meets user's request id"
         def results = mvc.perform(delete("/Employee/delete/1"))
 
         then: "user gets not modified status"
-        results.andExpect(status().isNotModified())
-            .andExpect(content().json(objectMapper.writeValueAsString(GeneralResponseDTO.EMPLOYEE_NOT_DELETED)))
+        results.andExpect(status().isNotFound())
+            .andExpect(content().json(objectMapper.writeValueAsString(GeneralResponseDTO.EMPLOYEE_DOES_NOT_EXISTS)))
     }
 
     def '''should pass id from Employee/{id} get endpoint to employeeService::findById method and return its data in json if exists''' ()
